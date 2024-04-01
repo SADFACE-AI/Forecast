@@ -142,46 +142,54 @@
     </div>
   </div>
   <script>
-    function forecast() {
-      const currentInventory = parseFloat(document.getElementById('currentInventory').value);
-      const salesData = [];
-      for (let i = 1; i <= 6; i++) { // Updated to loop through 6 months
-        const sale = parseFloat(document.getElementById(`sale${i}`).value);
-        salesData.push(sale);
-      }
-      const leadTime = parseFloat(document.getElementById('leadTime').value);
-      const serviceLevel = parseFloat(document.getElementById('serviceLevel').value) / 100;
+   function forecast() {
+  const currentInventory = parseFloat(document.getElementById('currentInventory').value);
+  const salesData = [];
+  for (let i = 1; i <= 6; i++) {
+    const sale = parseFloat(document.getElementById(`sale${i}`).value);
+    salesData.push(sale);
+  }
+  const leadTime = parseFloat(document.getElementById('leadTime').value);
+  const serviceLevel = parseFloat(document.getElementById('serviceLevel').value) / 100;
 
-      // Check if any input is NaN
-      if (isNaN(currentInventory) || salesData.some(isNaN) || isNaN(leadTime) || isNaN(serviceLevel)) {
-        alert("Please enter valid numbers for all inputs.");
-        return;
-      }
+  // Check if any input is NaN
+  if (isNaN(currentInventory) || salesData.some(isNaN) || isNaN(leadTime) || isNaN(serviceLevel)) {
+    alert("Please enter valid numbers for all inputs.");
+    return;
+  }
 
-      // Calculate average monthly sales
-      const averageMonthlySales = Math.round(salesData.reduce((total, sale) => total + sale, 0) / salesData.length);
+  // Calculate average monthly sales
+  const averageMonthlySales = Math.round(salesData.reduce((total, sale) => total + sale, 0) / salesData.length);
 
-      // Calculate purchase growth rate by comparing each month's sales to the previous month's sales
-      const growthRates = [];
-      for (let i = 1; i < salesData.length; i++) {
-        const growthRate = Math.round(((salesData[i] - salesData[i - 1]) / salesData[i - 1]) * 100);
-        growthRates.push(growthRate);
-      }
+  // Calculate purchase growth rate by comparing each month's sales to the previous month's sales
+  const growthRates = [];
+  for (let i = 1; i < salesData.length; i++) {
+    const prevSale = salesData[i - 1];
+    const currSale = salesData[i];
+    if (prevSale !== 0 && currSale !== 0) {
+      const growthRate = Math.round(((currSale - prevSale) / prevSale) * 100);
+      growthRates.push(growthRate);
+    } else {
+      // If either previous or current month's sales are zero, consider it as a minor decrease in sales
+      growthRates.push(-5); // Assumed minor decrease in sales
+    }
+  }
 
-      // Calculate average purchase growth rate
-      const averagePurchaseGrowthRate = Math.round(growthRates.reduce((total, rate) => total + rate, 0) / growthRates.length);
+  // Calculate average purchase growth rate
+  const validGrowthRates = growthRates.filter(rate => !isNaN(rate)); // Exclude NaN (division by zero) and Infinity
+  const averagePurchaseGrowthRate = validGrowthRates.length > 0 ? Math.round(validGrowthRates.reduce((total, rate) => total + rate, 0) / validGrowthRates.length) : 0;
 
-      // Calculate average monthly purchases with growth rate
-      const averageMonthlyPurchases = Math.round(averageMonthlySales * (1 + averagePurchaseGrowthRate / 100));
+  // Calculate average monthly purchases with growth rate
+  const averageMonthlyPurchases = Math.round(averageMonthlySales * (1 + averagePurchaseGrowthRate / 100));
 
-      // Calculate safety stock
-      const safetyStock = Math.round(calculateSafetyStock(averageMonthlyPurchases, serviceLevel, leadTime));
+  // Calculate safety stock
+  const safetyStock = Math.round(calculateSafetyStock(averageMonthlyPurchases, serviceLevel, leadTime));
 
-      // Calculate forecasted need
-      const forecastedNeed = Math.round(averageMonthlyPurchases + safetyStock - currentInventory);
+  // Calculate forecasted need
+  const forecastedNeed = Math.round(averageMonthlyPurchases + safetyStock - currentInventory);
 
-      // Update UI with forecast result
-      const forecastResultElement = document.getElementById('forecastResult');
+  // Update UI with forecast result
+  const forecastResultElement = document.getElementById('forecastResult');
       if (forecastedNeed >= 0) {
         forecastResultElement.innerHTML = `You need to order <span style="color:black">${forecastedNeed} units.</span>`;
         // Add explanation for "You need to order" or "You have excess stock"

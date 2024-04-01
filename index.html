@@ -82,15 +82,21 @@
 
     .months label {
       width: 100%;
-      margin-bottom: 5px;
+      margin-bottom: 10px;
       font-weight: normal;
       color: #555555;
       font-size: 14px;
     }
+    
+    @media screen and (min-width: 700px) {
+      .months input[type="number"] {
+        width: calc(100% - 10px);
+      }
+    }
 
     @media screen and (max-width: 600px) {
       .months input[type="number"] {
-        width: calc(50% - 10px);
+        width: calc(100% - 10px);
       }
     }
 
@@ -99,6 +105,7 @@
         width: calc(100% - 10px);
       }
     }
+    
   </style>
 </head>
 <body>
@@ -114,7 +121,7 @@
       <span>%</span> <!-- Added to indicate percentage -->
     </div>
     <div class="sales-input">
-      <label for="sales">Sales Data:</label>
+      <label for="sales">Monthly Sales Data:</label>
       <div class="months">
         <div>
           <input type="number" id="sale1" min="0"><label for="sale1">Month 1</label>
@@ -143,7 +150,7 @@
         salesData.push(sale);
       }
       const leadTime = parseFloat(document.getElementById('leadTime').value);
-      const serviceLevel = parseFloat(document.getElementById('serviceLevel').value);
+      const serviceLevel = parseFloat(document.getElementById('serviceLevel').value) / 100;
 
       // Check if any input is NaN
       if (isNaN(currentInventory) || salesData.some(isNaN) || isNaN(leadTime) || isNaN(serviceLevel)) {
@@ -177,6 +184,12 @@
       const forecastResultElement = document.getElementById('forecastResult');
       if (forecastedNeed >= 0) {
         forecastResultElement.innerHTML = `You need to order <span style="color:black">${forecastedNeed} units.</span>`;
+        // Add explanation for "You need to order" or "You have excess stock"
+        forecastResultElement.innerHTML += '<br><span style="font-size: smaller;">Forecasted need is calculated by adding average monthly purchases to safety stock, then subtracting current inventory.</span>';
+        
+        // Add extra line break after each result
+        forecastResultElement.innerHTML += '<br>';
+        forecastResultElement.innerHTML += '<br>';
       } else {
         forecastResultElement.innerHTML = `You have excess stock of <span style="color:red">${Math.abs(forecastedNeed)} units.</span>`;
 

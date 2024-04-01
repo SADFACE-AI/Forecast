@@ -4,7 +4,113 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Item Inventory Forecasting</title>
-  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      background-color: #ffffff;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333333;
+    }
+
+    .input-section, .output-section {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #555555;
+    }
+
+    input[type="number"] {
+      width: 120px;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #cccccc;
+      border-radius: 5px;
+      font-size: 16px;
+      color: #333333;
+      box-sizing: border-box; /* Include padding in width calculation */
+    }
+
+    button {
+      padding: 12px 24px;
+      background-color: #007bff;
+      color: #ffffff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      display: block;
+      margin: 0 auto;
+      margin-top: 20px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .sales-input {
+      margin-bottom: 20px;
+    }
+
+    .months {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap; /* Allow items to wrap to the next line */
+    }
+
+    .months input[type="number"] {
+      width: calc(20% - 15px); /* Adjusted width and margin */
+      margin-right: 15px;
+      margin-bottom: 10px; /* Added margin bottom to create space between rows */
+      padding: 10px;
+      border: 1px solid #cccccc;
+      border-radius: 5px;
+      font-size: 16px;
+      color: #333333;
+      box-sizing: border-box; /* Include padding in width calculation */
+    }
+
+    .months label {
+      margin-right: 20px;
+      color: #555555;
+    }
+
+    .service-level-input {
+      display: flex;
+      align-items: center;
+    }
+
+    .service-level-input input[type="number"] {
+      width: 80px;
+      margin-right: 5px;
+    }
+
+    .service-level-input span {
+      font-size: 16px;
+      color: #333333;
+    }
+
+    @media screen and (max-width: 768px) {
+      .months input[type="number"] {
+        width: calc(33.33% - 10px); /* Adjust width for smaller screens */
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -37,7 +143,6 @@
       <p id="forecastResult">-</p>
     </div>
   </div>
-  <script src="script.js"></script>
   <script>
     function forecast() {
       const currentInventory = parseFloat(document.getElementById('currentInventory').value);
@@ -86,11 +191,10 @@
 
         // Add explanation for "You need to order" or "You have excess stock"
         forecastResultElement.innerHTML += '<br><span style="font-size: smaller;">Forecasted need is calculated by adding average monthly purchases to safety stock, then subtracting current inventory.</span>';
-
+        
         // Add extra line break after each result
         forecastResultElement.innerHTML += '<br>';
         forecastResultElement.innerHTML += '<br>';
-
       }
 
       // Display recommended stock level on its own line
@@ -98,7 +202,7 @@
 
       // Add explanation for recommended stock level
       forecastResultElement.innerHTML += '<span style="font-size: smaller;">Recommended stock level is calculated based on the service level and lead time demand variability to ensure a specified service level is maintained while minimizing the risk of stockouts.</span>';
-
+      
       // Add extra line break after each result
       forecastResultElement.innerHTML += '<br>';
       forecastResultElement.innerHTML += '<br>';

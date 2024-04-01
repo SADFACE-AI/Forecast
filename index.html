@@ -15,8 +15,10 @@
       <label for="leadTime">Lead Time (in days):</label>
       <input type="number" id="leadTime" min="0">
       <label for="serviceLevel">Desired Service Level:</label>
-      <input type="number" id="serviceLevel" min="0" max="100" step="1" value="95"> <!-- Adjusted to display percentage -->
-      <span>%</span> <!-- Added to indicate percentage -->
+      <div class="service-level-input">
+        <input type="number" id="serviceLevel" min="0" max="100" step="1" value="95"> <!-- Adjusted to display percentage -->
+        <span>%</span> <!-- Added to indicate percentage -->
+      </div>
     </div>
     <div class="sales-input">
       <label for="sales">Sales Data:</label>
@@ -35,98 +37,6 @@
       <p id="forecastResult">-</p>
     </div>
   </div>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      background-color: #ffffff;
-    }
-
-    h1 {
-      text-align: center;
-      color: #333333;
-    }
-
-    .input-section, .output-section {
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-      color: #555555;
-    }
-
-    input[type="number"] {
-      width: 120px;
-      margin-bottom: 10px;
-      padding: 10px;
-      border: 1px solid #cccccc;
-      border-radius: 5px;
-      font-size: 16px;
-      color: #333333;
-      box-sizing: border-box; /* Include padding in width calculation */
-    }
-
-    button {
-      padding: 12px 24px;
-      background-color: #007bff;
-      color: #ffffff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      display: block;
-      margin: 0 auto;
-      margin-top: 20px;
-      transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #0056b3;
-    }
-
-    .sales-input {
-      margin-bottom: 20px;
-    }
-
-    .months {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap; /* Allow items to wrap to the next line */
-    }
-
-    .months input[type="number"] {
-      width: calc(20% - 15px); /* Adjusted width and margin */
-      margin-right: 15px;
-      margin-bottom: 10px; /* Added margin bottom to create space between rows */
-      padding: 10px;
-      border: 1px solid #cccccc;
-      border-radius: 5px;
-      font-size: 16px;
-      color: #333333;
-      box-sizing: border-box; /* Include padding in width calculation */
-    }
-
-    .months label {
-      margin-right: 20px;
-      color: #555555;
-    }
-
-    @media screen and (max-width: 768px) {
-      .months input[type="number"] {
-        width: calc(33.33% - 10px); /* Adjust width for smaller screens */
-      }
-    }
-  </style>
   <script src="script.js"></script>
   <script>
     function forecast() {

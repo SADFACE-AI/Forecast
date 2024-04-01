@@ -63,73 +63,40 @@
       background-color: #0056b3;
     }
 
-    .sales-input {
-      margin-bottom: 20px;
-    }
-
     .months {
       display: flex;
-      align-items: center;
-      flex-wrap: wrap; /* Allow items to wrap to the next line */
+      flex-wrap: wrap;
+      justify-content: space-between;
     }
 
     .months input[type="number"] {
-      width: calc(20% - 15px); /* Adjusted width and margin */
-      margin-right: 15px;
-      margin-bottom: 10px; /* Added margin bottom to create space between rows */
+      width: calc(33.33% - 10px);
+      margin-bottom: 10px;
       padding: 10px;
       border: 1px solid #cccccc;
       border-radius: 5px;
       font-size: 16px;
       color: #333333;
-      box-sizing: border-box; /* Include padding in width calculation */
+      box-sizing: border-box;
     }
 
     .months label {
-      margin-right: 20px;
+      width: 100%;
+      margin-bottom: 5px;
+      font-weight: normal;
       color: #555555;
+      font-size: 14px;
     }
 
-    .service-level-input {
-      display: flex;
-      align-items: center;
-    }
-
-    .service-level-input input[type="number"] {
-      width: 80px;
-      margin-right: 5px;
-    }
-
-    .service-level-input span {
-      font-size: 16px;
-      color: #333333;
-    }
-
-    .output-section {
-      margin-top: 20px;
-    }
-
-    .output-section h2 {
-      color: #333333;
-    }
-
-    .output-section p {
-      margin-top: 10px;
-      font-size: 18px;
-      color: #333333;
-    }
-
-    .output-section p span {
-      font-weight: bold;
-    }
-
-    .output-section span {
-      font-size: smaller;
-    }
-
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: 600px) {
       .months input[type="number"] {
-        width: calc(33.33% - 10px); /* Adjust width for smaller screens */
+        width: calc(50% - 10px);
+      }
+    }
+
+    @media screen and (max-width: 400px) {
+      .months input[type="number"] {
+        width: calc(100% - 10px);
       }
     }
   </style>
@@ -143,20 +110,22 @@
       <label for="leadTime">Lead Time (in days):</label>
       <input type="number" id="leadTime" min="0">
       <label for="serviceLevel">Desired Service Level:</label>
-      <div class="service-level-input">
-        <input type="number" id="serviceLevel" min="0" max="100" step="1" value="95"> <!-- Adjusted to display percentage -->
-        <span>%</span> <!-- Added to indicate percentage -->
-      </div>
+      <input type="number" id="serviceLevel" min="0" max="100" step="1" value="95"> <!-- Adjusted to display percentage -->
+      <span>%</span> <!-- Added to indicate percentage -->
     </div>
     <div class="sales-input">
       <label for="sales">Sales Data:</label>
       <div class="months">
-        <input type="number" id="sale1" min="0"><label for="sale1">Month 1</label>
-        <input type="number" id="sale2" min="0"><label for="sale2">Month 2</label>
-        <input type="number" id="sale3" min="0"><label for="sale3">Month 3</label>
-        <input type="number" id="sale4" min="0"><label for="sale4">Month 4</label>
-        <input type="number" id="sale5" min="0"><label for="sale5">Month 5</label>
-        <input type="number" id="sale6" min="0"><label for="sale6">Month 6</label> <!-- Added input field for Month 6 -->
+        <div>
+          <input type="number" id="sale1" min="0"><label for="sale1">Month 1</label>
+          <input type="number" id="sale2" min="0"><label for="sale2">Month 2</label>
+          <input type="number" id="sale3" min="0"><label for="sale3">Month 3</label>
+        </div>
+        <div>
+          <input type="number" id="sale4" min="0"><label for="sale4">Month 4</label>
+          <input type="number" id="sale5" min="0"><label for="sale5">Month 5</label>
+          <input type="number" id="sale6" min="0"><label for="sale6">Month 6</label> <!-- Added input field for Month 6 -->
+        </div>
       </div>
     </div>
     <button onclick="forecast()">Forecast</button>

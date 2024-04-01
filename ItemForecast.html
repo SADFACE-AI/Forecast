@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Item Inventory Forecasting</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Inventory Forecasting</h1>
+    <div class="input-section">
+      <label for="currentInventory">Current Inventory Level:</label>
+      <input type="number" id="currentInventory" min="0">
+      <label for="leadTime">Lead Time (in days):</label>
+      <input type="number" id="leadTime" min="0">
+      <label for="serviceLevel">Desired Service Level:</label>
+      <input type="number" id="serviceLevel" min="0" max="100" step="1" value="95"> <!-- Adjusted to display percentage -->
+      <span>%</span> <!-- Added to indicate percentage -->
+    </div>
+    <div class="sales-input">
+      <label for="sales">Sales Data:</label>
+      <div class="months">
+        <input type="number" id="sale1" min="0"><label for="sale1">Month 1</label>
+        <input type="number" id="sale2" min="0"><label for="sale2">Month 2</label>
+        <input type="number" id="sale3" min="0"><label for="sale3">Month 3</label>
+        <input type="number" id="sale4" min="0"><label for="sale4">Month 4</label>
+        <input type="number" id="sale5" min="0"><label for="sale5">Month 5</label>
+        <input type="number" id="sale6" min="0"><label for="sale6">Month 6</label> <!-- Added input field for Month 6 -->
+      </div>
+    </div>
+    <button onclick="forecast()">Forecast</button>
+    <div class="output-section">
+      <h2>Forecasted Inventory Need:</h2>
+      <p id="forecastResult">-</p>
+    </div>
+  </div>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      background-color: #ffffff;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333333;
+    }
+
+    .input-section, .output-section {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #555555;
+    }
+
+    input[type="number"] {
+      width: 120px;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #cccccc;
+      border-radius: 5px;
+      font-size: 16px;
+      color: #333333;
+      box-sizing: border-box; /* Include padding in width calculation */
+    }
+
+    button {
+      padding: 12px 24px;
+      background-color: #007bff;
+      color: #ffffff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      display: block;
+      margin: 0 auto;
+      margin-top: 20px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .sales-input {
+      margin-bottom: 20px;
+    }
+
+    .months {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap; /* Allow items to wrap to the next line */
+    }
+
+    .months input[type="number"] {
+      width: calc(20% - 15px); /* Adjusted width and margin */
+      margin-right: 15px;
+      margin-bottom: 10px; /* Added margin bottom to create space between rows */
+      padding: 10px;
+      border: 1px solid #cccccc;
+      border-radius: 5px;
+      font-size: 16px;
+      color: #333333;
+      box-sizing: border-box; /* Include padding in width calculation */
+    }
+
+    .months label {
+      margin-right: 20px;
+      color: #555555;
+    }
+
+    @media screen and (max-width: 768px) {
+      .months input[type="number"] {
+        width: calc(33.33% - 10px); /* Adjust width for smaller screens */
+      }
+    }
+  </style>
+  <script src="script.js"></script>
+  <script>
+    function forecast() {
+      const currentInventory = parseFloat(document.getElementById('currentInventory').value);
+      const salesData = [];
+      for (let i = 1; i <= 6; i++) { // Updated to loop through 6 months
+        const sale = parseFloat(document.getElementById(`sale${i}`).value);
+        salesData.push(sale);
+      }
+      const leadTime = parseFloat(document.getElementById('leadTime').value);
+      const serviceLevel = parseFloat(document.getElementById('serviceLevel').value);
+
+      // Check if any input is NaN
+      if (isNaN(currentInventory) || salesData.some(isNaN) || isNaN(leadTime) || isNaN(serviceLevel)) {
+        alert("Please enter valid numbers for all inputs.");
+        return;
+      }
+
+      // Calculate average monthly sales
+      const averageMonthlySales = Math.round(salesData.reduce((total, sale) => total + sale, 0) / salesData.length);
+
+      // Calculate purchase growth rate by comparing each month's sales to the previous month's sales
+      const growthRates = [];
+      for (let i = 1; i < salesData.length; i++) {
+        const growthRate = Math.round(((salesData[i] - salesData[i - 1]) / salesData[i - 1]) * 100);
+        growthRates.push(growthRate);
+      }
+
+      // Calculate average purchase growth rate
+      const averagePurchaseGrowthRate = Math.round(growthRates.reduce((total, rate) => total + rate, 0) / growthRates.length);
+
+      // Calculate average monthly purchases with growth rate
+      const averageMonthlyPurchases = Math.round(averageMonthlySales * (1 + averagePurchaseGrowthRate / 100));
+
+      // Calculate safety stock
+      const safetyStock = Math.round(calculateSafetyStock(averageMonthlyPurchases, serviceLevel, leadTime));
+
+      // Calculate forecasted need
+      const forecastedNeed = Math.round(averageMonthlyPurchases + safetyStock - currentInventory);
+
+      // Update UI with forecast result
+      const forecastResultElement = document.getElementById('forecastResult');
+      if (forecastedNeed >= 0) {
+        forecastResultElement.innerHTML = `You need to order <span style="color:black">${forecastedNeed} units.</span>`;
+      } else {
+        forecastResultElement.innerHTML = `You have excess stock of <span style="color:red">${Math.abs(forecastedNeed)} units.</span>`;
+
+        // Add explanation for "You need to order" or "You have excess stock"
+        forecastResultElement.innerHTML += '<br><span style="font-size: smaller;">Forecasted need is calculated by adding average monthly purchases to safety stock, then subtracting current inventory.</span>';
+
+        // Add extra line break after each result
+        forecastResultElement.innerHTML += '<br>';
+        forecastResultElement.innerHTML += '<br>';
+
+      }
+
+      // Display recommended stock level on its own line
+      forecastResultElement.innerHTML += `Recommended stock level to avoid backorders is: <span style="color:black">${safetyStock}</span><br>`;
+
+      // Add explanation for recommended stock level
+      forecastResultElement.innerHTML += '<span style="font-size: smaller;">Recommended stock level is calculated based on the service level and lead time demand variability to ensure a specified service level is maintained while minimizing the risk of stockouts.</span>';
+
+      // Add extra line break after each result
+      forecastResultElement.innerHTML += '<br>';
+      forecastResultElement.innerHTML += '<br>';
+
+      // Display growth rate on its own line
+      forecastResultElement.innerHTML += `Your monthly growth rate over a 6 month period is: <span style="color:${averagePurchaseGrowthRate >= 0 ? 'green' : 'red'}">${averagePurchaseGrowthRate}%</span><br>`;
+
+      // Add explanation of how purchase growth rate is calculated
+      forecastResultElement.innerHTML += '<span style="font-size: smaller;">Purchase growth rate is calculated by comparing each month\'s sales to the previous month\'s sales and then finding the average of these growth rates.</span>';
+    }
+
+    function calculateSafetyStock(averageMonthlyPurchases, serviceLevel, leadTime) {
+      // Calculate demand standard deviation (assuming lead time demand follows normal distribution)
+      const leadTimeDemandVariability = Math.sqrt(leadTime) * averageMonthlyPurchases * 0.2; // Assuming 20% variability
+
+      // Calculate safety stock based on service level (Z-score for the desired service level)
+      const zScore = getZScore(serviceLevel);
+      const safetyStock = zScore * leadTimeDemandVariability;
+
+      return safetyStock;
+    }
+
+    function getZScore(serviceLevel) {
+      // Error function approximation for erf(x)
+      function erf(x) {
+        const a1 = 0.254829592;
+        const a2 = -0.284496736;
+        const a3 = 1.421413741;
+        const a4 = -1.453152027;
+        const a5 = 1.061405429;
+        const p = 0.3275911;
+        const t = 1 / (1 + p * Math.abs(x));
+        const polynomial = a1 * t + a2 * Math.pow(t, 2) + a3 * Math.pow(t, 3) + a4 * Math.pow(t, 4) + a5 * Math.pow(t, 5);
+        return 1 - polynomial * Math.exp(-Math.pow(x, 2));
+      }
+
+      // Use binary search to find the Z-score that corresponds to the given service level
+      let low = -6; // Lower bound for Z-score
+      let high = 6; // Upper bound for Z-score
+      const tolerance = 0.000001; // Tolerance for precision
+
+      while (high - low > tolerance) {
+        const mid = (low + high) / 2;
+        const cdfValue = (1 + erf(mid / Math.sqrt(2))) / 2; // Calculate CDF value using erf(x)
+        if (cdfValue < serviceLevel) {
+          low = mid;
+        } else {
+          high = mid;
+        }
+      }
+
+      return low;
+    }
+  </script>
+</body>
+</html>
